@@ -1,0 +1,6 @@
+twitter
+selenium 
+PILLOW
+psutil
+requests
+shutil
