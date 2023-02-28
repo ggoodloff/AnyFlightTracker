@@ -1,10 +1,10 @@
 # AircraftTracker Facebook & Twitter Bot v2
 Multi Images to Facebook
 ----------------------------------------------------------------------------------------------
-#############################################################################################################
+##########################################################################################
 #This is a heavily modified UNATTACHED fork from the shbisson/OverPutney (https://github.com/shbisson/OverPutney) repository#
 #modified with the amazing help of Scott Ladewig (https://github.com/ladewig)                               #
-#############################################################################################################
+##########################################################################################
 
 An ADSB trackingbot that will post to Facebook and/or Twitter written in Python for use with the tar1090 aircraft mapping tool.
 
