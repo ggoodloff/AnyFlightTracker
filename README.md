@@ -1,5 +1,5 @@
 # AircraftTracker Facebook & Twitter Bot v2
-Multi Images to Facebook
+with multi images to Facebook
 ----------------------------------------------------------------------------------------------
 ##########################################################################################
 #This is a heavily modified UNATTACHED fork from the shbisson/OverPutney (https://github.com/shbisson/OverPutney) repository#
