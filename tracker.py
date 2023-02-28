@@ -32,6 +32,7 @@ import geomath
 import screenshot
 import aircraftdata
 import planespotters
+import CustomViewer
 
 from PIL import Image
 from PIL import ImageDraw
