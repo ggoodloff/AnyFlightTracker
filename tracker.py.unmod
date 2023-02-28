@@ -32,8 +32,7 @@ import geomath
 import screenshot
 import aircraftdata
 import planespotters
-#import CustomViewer  #Problem with newer version of PILLOW wanting to use xdg-open - reference (https://stackoverflow.com/questions/71170960/python-pillow-imageshow-show-isnt-displaying-images-raspbian)
-
+import CustomViewer
 
 from PIL import Image
 from PIL import ImageDraw
@@ -71,7 +70,7 @@ auth_token = parser.get('facebook','facebook_access_token_1') #facebook multipic
 page_id = parser.get('facebook', 'page_id_1') #facebook multipicture post
 
 #Image variables
-#img_path_1 = parser.get('images','img_path_1') # FB Post Image - Duplicated from Image_3 in CORE section - enable in config.ini
+img_path_1 = parser.get('images','img_path_1') # FB Post Image - Duplicated from Image_3 in CORE section
 img_path_2 = parser.get('images','img_path_2') # Image downloaded from planespotters.net
 img_path_3 = parser.get('images','img_path_3') # Set in screenshot.py - screenshot of tar1090 screen when alarm is triggered
 
@@ -164,12 +163,12 @@ def FB(a):
 	photo_url = ps_photo[0]
 	photo_credit = ps_photo[1]
 
-	print(photo_url) ## Echo to log/screen
-	print(photo_credit) ## Echo to log/ecreen
+	print(photo_url)
+	print(photo_credit)
 
 
 	img_data = requests.get(photo_url).content
-	with open(img_path_2, 'wb') as handler: 
+	with open(img_path_2, 'wb') as handler: ##
 		handler.write(img_data)
 
 	photo_file = img_path_2 # var of saved file used for manipulation
@@ -209,7 +208,7 @@ def multiPostImage(page_id):
 	fb_tweet_msg = (fb_prep[0])+" Photo by: "+(fb_prep[1])+" @ Planespotters.net"
 
 	imgs_id = []
-	img_list = [img_path_3, img_path_2] #  <- modify this to reflect paths set at line 175 above and [images] section of config file. Add more facebook photos per post here
+	img_list = [img_path_1, img_path_2] #  <- modify this to reflect paths set in facebook section at line 64 above and [facebook] section of config file
 	for img in img_list:
 		post_id = postImage(page_id ,img)
 		imgs_id.append(post_id['id'])
@@ -248,13 +247,13 @@ def twitterpost():
 	api = tweepy.API(auth)
 
 	twittermsg = fb_prep[0]
-	screenshot = img_path_3 # cropped screenshot from screenshot.py of tracked flight
+	screenshot = img_path_3
 
 # Upload image
-	media = api.media_upload(screenshot) #single photo upload
+	media = api.media_upload(screenshot)
 
 # Post tweet with image
-	post_result = api.update_status(status=twittermsg, media_ids=[media.media_id])  # single photo upload
+	post_result = api.update_status(status=twittermsg, media_ids=[media.media_id])
 
 #######################################################################
 
@@ -280,7 +279,7 @@ if __name__ == "__main__":
 	while True:
 #		if time.time() > lastReloadTime + 3600 and len(alarms) == 0:
 		if time.time() > lastReloadTime + 540 and len(alarms) == 0:	# Adjust this time (in seconds) if chromium cannot keep up based on server resources <- prevents zombie process
-#			display.reload()
+			display.reload()
 			lastReloadTime = time.time()
 
 		sleep(abovetustin_sleep_time)
@@ -338,27 +337,25 @@ if __name__ == "__main__":
 						faInfo = fa_api.FlightInfo(a[0].flight, fa_username, fa_api_key)
 					else:
 						faInfo = False
-####### Post to socials without exemption timeout caused mu xgd-open errors on non-display systems) ####################
-####################  https://stackoverflow.com/questions/71170960/python-pillow-imageshow-show-isnt-displaying-images-raspbian  ################################
 					try:
 						if twitter_enable:
 							print("Post to Twitter!!!!!")
 							twitterpost()
 							print("Done....")
 						if fb_enable:
-#							shutil.copyfile(img_path_3, img_path_1)
+							shutil.copyfile(img_path_3, img_path_1)
 							print("Post to Facebook!!!!!")
 							multiPostImage(page_id)
 							print("Done....")
 							print("#################################################################")
 							print("")
-						#remove generated image files so not duplicated in next post
-#							os.remove(img_path_1) #removes facebook file 
+					#remove generated image files so not duplicated in next post
+							os.remove(img_path_1) #removes facebook file 
 							os.remove(img_path_2) #removes planespotters.net file
 							os.remove(img_path_3) #removes screenshot file
 					except Exception:
-							print("Problems with FB or Twitter post:")
-							traceback.print_exc()
+						print("Problems with FB or Twitter post:")
+						traceback.print_exc()
 					finishedalarms.append(a[0].hex)
 
 		# for each alarm that is finished, delete it from the dictionary
