@@ -274,3 +274,23 @@ Starting / Stopping bot  (NOT TO BE RUN BY ROOT/SUDO)
 This is an UNATTACHED fork from the shbisson/OverPutney (https://github.com/shbisson/OverPutney) repository 
 modified with the amazing help of Scott Ladewig (https://github.com/ladewig)
 ############################################################################################################
+
+
+################   TWITTER API APPLICATION SCRIPT   ################################
+This application is written in python to use the post only API of twitter to post public information 
+obtained from local sensors around the area for aircraft in the sky.  This is a public account in which 
+no information will be read by the API or ads marketed to the viewers. This is for informational and 
+educational purposes only.
+
+################################
+
+Please describe your planned use of these features.
+
+Answer:
+This app will only utilize the tweet/post feature to post publicly available and verifable information 
+used for informational and educational purposes only. This app will not post ads, gather information 
+from users or market information to users.
+
+
+####################################################################################
+

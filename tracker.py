@@ -181,7 +181,7 @@ def FB(a):
 		I1 = ImageDraw.Draw(img) # Add Text to an image
 		I1.font = ImageFont.truetype("./font/arial.ttf", size=18)
 		I1.text((10, 10), "Credit: "+ (photo_credit)+" - Planespotters.net", fill=(255, 255, 255)) # Display edited image
-		img.show() # Save the edited image
+#		img.show() # used to display modified image on graphic interface
 		img.save(photo_file)
 
 
