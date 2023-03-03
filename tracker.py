@@ -24,6 +24,8 @@ from configparser import ConfigParser
 from string import Template
 import requests
 import json
+from mastodon import Mastodon  # added
+
 
 import datasource
 import fa_api
@@ -32,8 +34,6 @@ import geomath
 import screenshot
 import aircraftdata
 import planespotters
-#import CustomViewer  #Problem with newer version of PILLOW wanting to use xdg-open - reference (https://stackoverflow.com/questions/71170960/python-pillow-imageshow-show-isnt-displaying-images-raspbian)
-
 
 from PIL import Image
 from PIL import ImageDraw
@@ -61,17 +61,22 @@ twitter_consumer_secret = parser.get('twitter', 'consumer_secret')
 twitter_access_token = parser.get('twitter', 'access_token')
 twitter_access_token_secret = parser.get('twitter', 'access_token_secret')
 
-
-# Facebook variables and function
+# Enable Socials
 twitter_enable = parser.getboolean('twitter','twitter_enable')
+fb_enable = parser.getboolean('facebook','fb_enable')
+mastodon_enable = parser.getboolean('mastodon','mastodon_enable')
 
 # Facebook variables and function
-fb_enable = parser.getboolean('facebook','fb_enable')
 auth_token = parser.get('facebook','facebook_access_token_1') #facebook multipicture post
 page_id = parser.get('facebook', 'page_id_1') #facebook multipicture post
 
+# Mastodon variables
+mastodon_token = parser.get('mastodon','token')
+mastodon_server = parser.get('mastodon','server')
+
+
 #Image variables
-#img_path_1 = parser.get('images','img_path_1') # FB Post Image - Duplicated from Image_3 in CORE section - enable in config.ini
+img_path_1 = parser.get('images','img_path_1') # FB Post Image - Duplicated from Image_3 in CORE section
 img_path_2 = parser.get('images','img_path_2') # Image downloaded from planespotters.net
 img_path_3 = parser.get('images','img_path_3') # Set in screenshot.py - screenshot of tar1090 screen when alarm is triggered
 
@@ -164,12 +169,12 @@ def FB(a):
 	photo_url = ps_photo[0]
 	photo_credit = ps_photo[1]
 
-	print(photo_url) ## Echo to log/screen
-	print(photo_credit) ## Echo to log/ecreen
+#	print(photo_url)
+#	print(photo_credit)
 
 
 	img_data = requests.get(photo_url).content
-	with open(img_path_2, 'wb') as handler: 
+	with open(img_path_2, 'wb') as handler: ##
 		handler.write(img_data)
 
 	photo_file = img_path_2 # var of saved file used for manipulation
@@ -181,7 +186,7 @@ def FB(a):
 		I1 = ImageDraw.Draw(img) # Add Text to an image
 		I1.font = ImageFont.truetype("./font/arial.ttf", size=18)
 		I1.text((10, 10), "Credit: "+ (photo_credit)+" - Planespotters.net", fill=(255, 255, 255)) # Display edited image
-#		img.show() # used to display modified image on graphic interface
+#		img.show() # Save the edited image
 		img.save(photo_file)
 
 
@@ -209,7 +214,7 @@ def multiPostImage(page_id):
 	fb_tweet_msg = (fb_prep[0])+" Photo by: "+(fb_prep[1])+" @ Planespotters.net"
 
 	imgs_id = []
-	img_list = [img_path_3, img_path_2] #  <- modify this to reflect paths set at line 175 above and [images] section of config file. Add more facebook photos per post here
+	img_list = [img_path_3, img_path_2] #  <- modify this to reflect paths set in facebook section at line 64 above and [facebook] section of config file
 	for img in img_list:
 		post_id = postImage(page_id ,img)
 		imgs_id.append(post_id['id'])
@@ -221,6 +226,30 @@ def multiPostImage(page_id):
 		args[key]="{'media_fbid': '"+img_id+"'}"
 	url = f"https://graph.facebook.com/{page_id}/feed?access_token=" + auth_token
 	requests.post(url, data=args)
+
+
+###########################  Mastodon Post  ####################################
+
+def mastadonpost():
+
+	fb_prep = FB(a[0])  #run FB function to downloads photo from planespotters.net and sets mastodon_msg variable
+	mastodon_msg = (fb_prep[0])+" Photo by: "+(fb_prep[1])+" @ Planespotters.net"
+
+
+	#   Set up Mastodon
+	mastodon = Mastodon(
+		access_token = mastodon_token,
+		api_base_url = mastodon_server
+	)
+
+#uncomment image files used from [images] in config.ini - Mastadon can upload 4 images max per post
+#	media1 = mastodon.media_post(img_path_1, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+	media2 = mastodon.media_post(img_path_2, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+	media3 = mastodon.media_post(img_path_3, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+#	media4 = mastodon.media_post(img_path_4, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+	mastodon.status_post(mastodon_msg, media_ids=[media3,media2]) # Set order of image upload
+
+
 
 
 ########################   TWITTER POST  ##################################
@@ -248,13 +277,13 @@ def twitterpost():
 	api = tweepy.API(auth)
 
 	twittermsg = fb_prep[0]
-	screenshot = img_path_3 # cropped screenshot from screenshot.py of tracked flight
+	screenshot = img_path_3
 
 # Upload image
-	media = api.media_upload(screenshot) #single photo upload
+	media = api.media_upload(screenshot)
 
 # Post tweet with image
-	post_result = api.update_status(status=twittermsg, media_ids=[media.media_id])  # single photo upload
+	post_result = api.update_status(status=twittermsg, media_ids=[media.media_id])
 
 #######################################################################
 
@@ -338,8 +367,6 @@ if __name__ == "__main__":
 						faInfo = fa_api.FlightInfo(a[0].flight, fa_username, fa_api_key)
 					else:
 						faInfo = False
-####### Post to socials without exemption timeout caused mu xgd-open errors on non-display systems) ####################
-####################  https://stackoverflow.com/questions/71170960/python-pillow-imageshow-show-isnt-displaying-images-raspbian  ################################
 					try:
 						if twitter_enable:
 							print("Post to Twitter!!!!!")
@@ -352,10 +379,17 @@ if __name__ == "__main__":
 							print("Done....")
 							print("#################################################################")
 							print("")
+						if mastodon_enable:
+							print("Post to Masodon!!!!!")
+							mastadonpost()
+							print("Done....")
+							print("#################################################################")
+							print("")
+
 						#remove generated image files so not duplicated in next post
-#							os.remove(img_path_1) #removes facebook file 
-							os.remove(img_path_2) #removes planespotters.net file
-							os.remove(img_path_3) #removes screenshot file
+#						os.remove(img_path_1) #removes facebook file 
+#						os.remove(img_path_2) #removes planespotters.net file
+#						os.remove(img_path_3) #removes screenshot file
 					except Exception:
 							print("Problems with FB or Twitter post:")
 							traceback.print_exc()

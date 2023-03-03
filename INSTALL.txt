@@ -72,6 +72,8 @@ Perform in this order:
 			python3 -m pip install --user psutil (as tracker)
 		-> python/requests
 			python3 -m pip install --user requests (as tracker)
+		-> python/Mastodon
+			python3 -m pip install --user mastodon.py (as tracker) <- Only if utilizing the Mastodon module
 		-> python/shutil (only if posting to facebook) # This may or may not need to be installed if python=>3.10 Included python=>3.10
 			python3 -m pip install --user shutil (as tracker)
 
