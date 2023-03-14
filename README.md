@@ -38,5 +38,5 @@ See my operational setup at:
 
 ACCESS TO GLOBAL JSON IS AVAILABLE FOR $3/month per IP access - email info@adsb.pro for more information. This allows for bots to be setup without any equipment
 at designated coordinates. Example:  https://adsb.pro/@riadsb is a bot used in this method that posts to Mastodon and has absolutly no physical
-presense in that location. http://pawtucketmap.adsb.pro is the map used for screen captures (not data).
+presense in that location. http://pawtucket.rtmladsb.com is the map used for screen captures (not data).
 

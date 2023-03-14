@@ -73,8 +73,8 @@ page_id = parser.get('facebook', 'page_id_1') #facebook multipicture post
 # Mastodon variables
 mastodon_token = parser.get('mastodon','token')
 mastodon_server = parser.get('mastodon','server')
-mastodon_token2 = parser.get('mastodon','token2')
-mastodon_server2 = parser.get('mastodon','server2')
+#mastodon_token2 = parser.get('mastodon','token2')
+#mastodon_server2 = parser.get('mastodon','server2')
 
 
 #Image variables
