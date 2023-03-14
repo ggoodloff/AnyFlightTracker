@@ -29,12 +29,12 @@ See my operational setup at:
 
 ###Physical Equipment###
   https://adsb.pro/@overbellevue (Mastodon)
-  http://twitter.com/sarpy_spotter
+  https://twitter.com/sarpy_spotter
   https://www.facebook.com/RadarOverBellevue/
 
 ###Virtual Bot with no equipment####
   https://adsb.pro/@riadsb  (Mastodon)
-
+  https://twitter.com/ri_aircraft
 
 ACCESS TO GLOBAL JSON IS AVAILABLE FOR $3/month per IP access - email info@adsb.pro for more information. This allows for bots to be setup without any equipment
 at designated coordinates. Example:  https://adsb.pro/@riadsb is a bot used in this method that posts to Mastodon and has absolutly no physical
