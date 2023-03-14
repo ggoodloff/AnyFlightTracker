@@ -6,9 +6,12 @@ with multi images to Facebook
 #modified with the amazing help of Scott Ladewig (https://github.com/ladewig)                               #
 ##########################################################################################
 
-An ADSB trackingbot that will post to Facebook and/or Twitter written in Python for use with the tar1090 aircraft mapping tool.
+An ADSB trackingbot which can be utilized anywhere with or without equipment. Code is configured so that the use of a global JSON file will allows it to monitor
+aurcraft anywhere there is coverage. This code will also post to Facebook, Twitter and Mastodon (Multiple Servers) and is  written in Python for use with the 
+tar1090 aircraft mapping tool.
 
-Based on the twitterbot OverPutney by @shbisson (https://github.com/shbisson/OverPutney) and updated and modified with the assistance of Scott Ladewig (https://github.com/ladewig)
+Originally based on the twitterbot OverPutney by @shbisson (https://github.com/shbisson/OverPutney) and updated and modified with the assistance of 
+Scott Ladewig (https://github.com/ladewig)
 
 For facebook - images of aircraft are downloaded from planespotters.net api and images are credited on the fly using PILLOW and included Arial.ttf font.
 Does not pre-load webpage. Screenshot taken only when environment is triggered.
@@ -23,6 +26,17 @@ Advanced use: ability to track anywhere using latitude/longitude and access to g
 The installation and operation is very straightforward and works amazingly well. The hardest part was navigating the Facebook developer site to create the correct application and obtain the correct keys that allowed for posting to a Facebook Page of a profile.
 
 See my operational setup at:
-  http://facebook.com/RadarOverBellevue
+
+###Physical Equipment###
+  https://adsb.pro/@overbellevue (Mastodon)
   http://twitter.com/sarpy_spotter
+  https://www.facebook.com/RadarOverBellevue/
+
+###Virtual Bot with no equipment####
+  https://adsb.pro/@riadsb  (Mastodon)
+
+
+ACCESS TO GLOBAL JSON IS AVAILABLE FOR $3/month per IP access - email info@adsb.pro for more information. This allows for bots to be setup without any equipment
+at designated coordinates. Example:  https://adsb.pro/@riadsb is a bot used in this method that posts to Mastodon and has absolutly no physical
+presense in that location. http://pawtucketmap.adsb.pro is the map used for screen captures (not data).
 
