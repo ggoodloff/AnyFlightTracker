@@ -1,3 +1,12 @@
+  ACCESS TO GLOBAL JSON IS AVAILABLE FOR $3/month - email info@adsb.pro for more information. This allows for bots to be setup without any equipment
+  at designated coordinates. Example:  https://adsb.pro/@riadsb is a bot used in this method that posts to Mastodon and has absolutly no physical
+  presense in that location. http://pawtucketmap.adsb.pro is the map used for screen captures (not data).
+
+
+#######################################################   Install instructions for AnyFlightTracker on std linux system  #############################
+##############################################  This has been confirmed to work on multiple Ubuntu flavors as well as Rpi  ###########################
+
+
 Installation Instructions
 	based on:
 		dedicated user: tracker  <- modify if needed
@@ -53,9 +62,11 @@ Perform in this order:
 -> install python/pip pip3 (sudo access needed)  
 	sudo apt install python3-pip
 
+############## Needed if installing TAR for screenshot capture #########################
 -> install NGINX webserver (sudo access needed)  <- can be skipped if a web server is already installed
 	-> used for tar1090 <- https://github.com/wiedehopf/tar1090
 		sudo apt install nginx
+########################################################################################
 
 -> install tracker dependencies
 
@@ -213,6 +224,20 @@ chromedriver ->  (sudo access needed)
 ################################   End of FB config section  ##############################################
 
 
+################################ Mastodon Setup  ############################################
+
+Use a reliable server like https://adsb.pro or https://mastodon.social
+
+->  Create an account and select prefrences and then developer
+->  Create your applicaiton, be sure to put a website and a return URI (I use the same website as my bot computer)
+->  When done click on your app name and then copy the "Your access token" and paste it in the config file alone with the full URL of the server you joined on
+->  Enable/disable mastodon in the config.ini file with Ture or False
+->  If you wish to post to 2 different mastodon servers - enter noth settings in the config.ini file and modify the mastodon sections in the tracker.py file
+    by uncomenting the mastodon settings around line (76&77) (246,247,248,249) and the graphic files you which to upload (262,263,264,265,266)
+
+#############################################################################################
+
+
 	[kill-chrome.sh] [runbot.sh] [run_tracker] [stopbot.sh] [taillog.sh]
 		-> set full path to tracker directory (where these files are located)
 
@@ -221,10 +246,6 @@ chromedriver ->  (sudo access needed)
 		-> modify the following line to reflect the chromium cache directory created earlier
 			options.add_argument("--user-data-dir=/home/chromium")
 		
-	[tracker.py]
-		-> modify line 142 to reflect the full path to your web browser's document home, include [config.ini]  
-			-> ( target = r'/var/www/html/fb.png )  <- directory should match your web browser home dir and the file name MUST match variable in [config.ini]
-
 -> Ensure scripts are executable
 	chmod u+x *.sh
 

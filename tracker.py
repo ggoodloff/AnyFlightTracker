@@ -73,6 +73,8 @@ page_id = parser.get('facebook', 'page_id_1') #facebook multipicture post
 # Mastodon variables
 mastodon_token = parser.get('mastodon','token')
 mastodon_server = parser.get('mastodon','server')
+mastodon_token2 = parser.get('mastodon','token2')
+mastodon_server2 = parser.get('mastodon','server2')
 
 
 #Image variables
@@ -237,17 +239,31 @@ def mastadonpost():
 
 
 	#   Set up Mastodon
-	mastodon = Mastodon(
+	mastodon1 = Mastodon(
 		access_token = mastodon_token,
 		api_base_url = mastodon_server
 	)
+	mastodon2 = Mastodon(
+		access_token = mastodon_token2,
+		api_base_url = mastodon_server2
+	)
 
+
+########## Server 1 ##########
 #uncomment image files used from [images] in config.ini - Mastadon can upload 4 images max per post
-#	media1 = mastodon.media_post(img_path_1, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
-	media2 = mastodon.media_post(img_path_2, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
-	media3 = mastodon.media_post(img_path_3, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
-#	media4 = mastodon.media_post(img_path_4, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
-	mastodon.status_post(mastodon_msg, media_ids=[media3,media2]) # Set order of image upload
+#	media1x1 = mastodon1.media_post(img_path_1, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+	media1x2 = mastodon1.media_post(img_path_2, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+	media1x3 = mastodon1.media_post(img_path_3, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+#	media1x4 = mastodon1.media_post(img_path_4, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+	mastodon1.status_post(mastodon_msg, media_ids=[media1x3,media1x2]) # Set order of image upload
+
+########## Server 2 ##########
+#uncomment image files used from [images] in config.ini - Mastadon can upload 4 images max per post
+#	media2x1 = mastodon2.media_post(img_path_1, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+	media2x2 = mastodon2.media_post(img_path_2, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+	media2x3 = mastodon2.media_post(img_path_3, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+#	media2x4 = mastodon2.media_post(img_path_4, description="Github AnyFlightTracker by @rtmladsb:mastadon.social")
+	mastodon2.status_post(mastodon_msg, media_ids=[media2x3,media2x2]) # Set order of image upload
 
 
 
