@@ -1,12 +1,12 @@
-# AircraftTracker Facebook & Twitter Bot v2.5
+# AnyFlightTracker Aircraft Tracker v2.5
 
-April 2023:This has capability to post to: Twitter,Facebook,Mastodon,Discord
+April 2023: This has capability to post to: Twitter,Facebook,Mastodon,Discord
 ----------------------------------------------------------------
 #################################################################
- This is a heavily modified UNATTACHED fork from the
- shbisson/OverPutney (https://github.com/shbisson/OverPutney) 
- repository modified with the amazing help of Scott Ladewig 
- (https://github.com/ladewig)
+This is a heavily modified UNATTACHED fork from the
+shbisson/OverPutney (https://github.com/shbisson/OverPutney)
+repository modified with the amazing help of Scott Ladewig
+(https://github.com/ladewig)
 #################################################################
 
 An ADSB trackingbot which can be utilized anywhere with or without with or without equipment. 
