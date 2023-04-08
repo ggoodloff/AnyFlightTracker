@@ -1,0 +1,319 @@
+  ACCESS TO GLOBAL JSON IS AVAILABLE FOR $3/month - email info@adsb.pro for more information. This allows for bots to be setup without any equipment
+  at designated coordinates. Example:  https://adsb.pro/@riadsb is a bot used in this method that posts to Mastodon and has absolutly no physical
+  presense in that location. http://pawtucketmap.adsb.pro is the map used for screen captures (not data).
+
+
+#######################################################   Install instructions for AnyFlightTracker on std linux system  #############################
+##############################################  This has been confirmed to work on multiple Ubuntu flavors as well as Rpi  ###########################
+
+
+Installation Instructions
+	based on:
+		dedicated user: tracker  <- modify if needed
+		python >= 3.9 installed
+		sudo access		<- can be installed without sudo assuming root required programs are installed
+
+
+Instructions created from a clean install Ubuntu machine. Tested on Ubuntu and Raspberry Pi
+
+
+Perform in this order:
+
+->set correct timezone (as root)
+	->check timezone
+	timedatectl
+		->verify Time Zone & NTP service is active
+	-> change timezone (if needed)
+	timedatectl list-timezones
+		-> note case sensitive TZ area
+			-> ex: America/Chicago
+		-> change to correct timezone (as root)
+		timedatectl set-timezone Region/City
+			-> ex: timedatectl set-timezone America/Aruba
+
+->add user (as root)
+	adduser tracker
+
+->add user to sudo group (as root)
+	usermod -aG sudo tracker
+
+-> testing sudo access (as root)
+	su tracker
+	sudo whoami <- enter root password (once per session)
+		-> output should be "root"
+
+
+->close session and login as tracker
+
+
+-> verify python3 is installed
+	python3 --version
+		-> if installed
+			python --version
+				-> if no result - create a symbolic link from python3 to python
+
+-> create symbolic link (sudo access needed)
+	cd /usr/bin
+	sudo ln -s /usr/bin/python3 python
+	
+-> verify python and python3 are the same version (verify's link)
+	python --version
+
+-> install python/pip pip3 (sudo access needed)  
+	sudo apt install python3-pip
+
+############## Needed if installing TAR for screenshot capture #########################
+-> install NGINX webserver (sudo access needed)  <- can be skipped if a web server is already installed
+	-> used for tar1090 <- https://github.com/wiedehopf/tar1090
+		sudo apt install nginx
+########################################################################################
+
+-> install tracker dependencies
+
+	[DEPENDENCIES]
+		-> tar1090 <- Assuming this machine has dump1090 or readsb installed (If not - Install readsb https://github.com/wiedehopf/readsb)
+			https://github.com/wiedehopf/tar1090
+		-> python/tweepy
+			python3 -m pip install --user tweepy (as tracker)
+		-> python/selenium
+			python3 -m pip install --user selenium (as tracker)
+		-> python/PILLOW
+			python3 -m pip install --user Pillow (as tracker)
+		-> python/psutil
+			python3 -m pip install --user psutil (as tracker)
+		-> python/requests
+			python3 -m pip install --user requests (as tracker)
+		-> python/Mastodon
+			python3 -m pip install --user mastodon.py (as tracker) <- Only if utilizing the Mastodon module
+		-> python/shutil (only if posting to facebook) # This may or may not need to be installed if python=>3.10 Included python=>3.10
+			python3 -m pip install --user shutil (as tracker)
+
+
+-> chromium-browser (sudo access needed)
+	sudo apt update && sudo apt install chromium-browser -y
+		-> check and note chromium version
+			chromium --version
+				-> ex:  Chromium 109.0.5414.119 snap
+
+chromedriver ->  (sudo access needed)
+	sudo apt install chromium-chromedriver
+		-> version must match chromium ***.*.**** (last set of numbers is not needed)
+			chromedriver --version
+				-> ex: ChromeDriver 109.0.5414.119
+				-> default install location is /usr/bin
+				->modify REPOSITORY FILE screenshot.py line 122 / line 123 / line 199 / line 200 if location is different 
+
+-> clone repository (as tracker)
+	-> in parent user directory (ex: /home/tracker)
+		git clone https://github.com/ggoodloff/AnyFlightTracker.git
+
+
+-> create chromium cache dir  (sudo access needed)
+	sudo mkdir /home/chromium
+		-> change ownership of chromium cache dir (sudo access needed)
+			sudo chown tracker:tracker /home/chromium
+		-> change permissions of chromium cache dir (sudo access needed)
+			chmod 777 /home/chromium/
+
+-> modify tracker files (as tracker)
+
+	[config.ini]
+		-> assign value to connect to your tar1090 aircraft.json and html page. (Ensure both pages can load in a browser)
+			data_url = http://{url}/tar1090/data/aircraft.json # most installs will be http://localhost/tar1090/data/aircraft.json
+			map_url = http://{url}/tar1090/   # most installs will be http://localhost/tar1090/
+
+		-> set trigger values
+			distance_alarm = 5  <- miles from your station. Post will not be generated until the aircraft has entered and cleared this value 
+			elevation_alarm = 35  <- elevation from the horizon that will trigger post
+
+		-> modify message to post utilizing variables listed above. Normal text can be included within this variable as well
+			tweet_template =  <- start against the "=" sign.  ex: tweet_template =#${flight}...
+			default_hashtags =  <- start against the "=" sign.  ex: default_hashtags =#AircraftTracker #adsb...
+
+		-> set your station lat/long. https://latlong.net is a good tool for this.
+			latitude = 37.0000
+			longitude = -85.0000
+
+		-> set your twitter api consumer/access_token key/secret. you must have read/write privelages. https://developer.twitter.com/
+			consumer_key = 
+			consumer_secret = 
+			access_token = 
+			access_token_secret = 
+
+
+#############   Facebook Integration Setup (very crude instructions - I'm working on this  #######################
+
+#############   If not using Facebook at this time, set fb_enable = False in [config.ini] and skip this section  #####################
+
+			-> Login to facebook with your facebook credentials or create a dedicated account for your bot
+				-> Create a page for this bot to access - this will not work correclty to a normal feed
+			-> Obtain your unique Facebook page ID and put this in the [config.ini] file inder page_id_1 in the [facebook] section
+				-> Login to your facebook profile and click Pages
+				-> Click on the page being used for yout bot
+					-> Click About
+					-> Click Page Transparency
+					-> Click See All
+					-> Click Go To Ad Library
+						-> In the new tab that opens
+							-> Look at the middle of the URL at the top of the page for "view_all_page_id=###########"
+							-> Highlight and copy the numbers after the "view_all_page_id="
+								-> Paste this into the [config.ini] file under the [facebook] section 
+								
+	###### Acess the developer area ##########
+			
+		-> login with your facebook credentials at: https://developers.facebook.com/tools/
+			->My Apps
+				-> Create App
+					-> Business or None
+					-> Fill in form
+			->Tools 
+				-> Graph API Explorer (this step may require a couple of tries to get correct. Meta runs you in circles sometimes)
+					-> Select Meta App (right side)
+					-> Set Permissions
+						->[permissions needed]
+							pages_manage_cta
+							pages_show_list
+							pages_messaging
+							page_events
+							pages_read_engagement
+							pages_manage_metadata
+							pages_read_user_content
+							pages_manage_posts
+							pages_manage_engagement
+					-> Click on generate access token
+					-> Confirm Facebook account to pair to 
+					-> Verify there is 9 permissions are assigned, if you see less - mostly 2 will show - reenter Graph API for and repeate the permissions
+					-> Click continue
+					-> Verify confirmation
+					-> Click Got It
+			-> Copy Acess token (this is a temporary token at this point)
+			-> Click TOOLS
+				-> Right click "Access Token Debugger" and Open in new tab
+				-> Paste access token
+				-> click DEBUG
+					-> Verify it states this is a PAGE token not USER
+						-> If user, go back to Graph API tool and change to page and select the page. DO NOT reclick generate token. Use the same token. It is a live save of the status
+							-> Return to the debug screen and should show a PAGE token at this point
+						-> Verify all the permissions are assigned to the token
+					-> At the very bottom of the debug screen, click ENTEND TOKEN
+						-> Copy this token (bottom of the screen) and this will be put in the [config.ini] file under [facebook_access_token_1]
+			-> In the [config.ini] file change [fb_enable] to True
+
+			-> You should now be posting to your new FB page
+
+
+			-> Helpful links to build your pages app:
+				https://developers.facebook.com/docs/development/create-an-app/
+				https://www.facebook.com/business/help/473994396650734?id=939256796236247
+			-> You will assign this page in the app settings above
+				https://developers.facebook.com/docs/pages/access-tokens/
+			-> After you verify your tracker is posting correctly to facebook, you can then set it to live for the public to access
+				**Reachout if you need help with the facebook part - they run you in circles to get to an end point
+
+		-> ** If using to post to facebook ** set your facebook variables
+			fb_enable = True
+			page_id_1 = XXXXXXXXXXXXXXXXXXX  <- https://www.facebook.com/help/1503421039731588
+			facebook_access_token_1 = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX <- Extended use PAGE API ID generated in previous process
+
+		-> Set the path to your working directory for these 3 line - please don't modify the file name unless you have odified the code elsewhere in [screenshot.py] and [tracker.py]
+			-> These files are deleted after each post to prevent the incorrect image files from being posted in case of a image grab anomaly
+			img_path_1 = /home/tracker/AircraftTracker/fb.png
+			img_path_2 = /home/tracker/AircraftTracker/ps_hex.jpg
+			img_path_3 = /home/tracker/AircraftTracker/tweet.png
+
+################################   End of FB config section  ##############################################
+
+
+################################ Mastodon Setup  ############################################
+
+Use a reliable server like https://adsb.pro or https://mastodon.social
+
+->  Create an account and select prefrences and then developer
+->  Create your applicaiton, be sure to put a website and a return URI (I use the same website as my bot computer)
+->  When done click on your app name and then copy the "Your access token" and paste it in the config file alone with the full URL of the server you joined on
+->  Enable/disable mastodon in the config.ini file with Ture or False
+->  If you wish to post to 2 different mastodon servers - enter noth settings in the config.ini file and modify the mastodon sections in the tracker.py file
+    by uncomenting the mastodon settings around line (76&77) (246,247,248,249) and the graphic files you which to upload (262,263,264,265,266)
+
+#############################################################################################
+
+
+	[kill-chrome.sh] [runbot.sh] [run_tracker] [stopbot.sh] [taillog.sh]
+		-> set full path to tracker directory (where these files are located)
+
+
+	[screenshot.py]
+		-> modify the following line to reflect the chromium cache directory created earlier
+			options.add_argument("--user-data-dir=/home/chromium")
+		
+-> Ensure scripts are executable
+	chmod u+x *.sh
+
+
+
+
+Starting / Stopping bot  (NOT TO BE RUN BY ROOT/SUDO)
+
+-> Manually Starting:
+	./runbot.sh  <- will create a log file [nohup.out] in the application directory upon starting
+		-> This script will kill any running processes associated with bot to ensure a clean start otherwise duplicate posts could happen
+			-> may see harmless process kill errors if processes were not running at the time
+		-> Script will start then autorestart main program in case of crash or error [tracker.py]
+		-> It will delete any existing log file [nohup.log]
+		-> Once active it will automatically start to tail a newly generated log file [nohup.out]
+		-> CTRL+C to break out of the log, but application will still be running
+
+-> Manually Starting (with no logfile creation)
+	./sys_boot.sh
+		-> Will not kill any running processes (run [./stopbot.sh] first if unsure)
+		-> Will not create a log file
+		-> Script will start then autorestart main program in case of crash or error [tracker.py]
+
+-> Autostart at boot
+	->cp boot script to PATH and make executable (sudo access needed)
+		sudo cp /home/tracker/AircraftTracker/sys_boot.sh /usr/sbin/
+		sudo chmod u+x /usr/sbin/sys_boot.sh
+
+	-> add startup script to boot file (sudo access needed)
+		sudo pico /etc/rc.local <- or system specific boot launch script
+			#!/bin/bash
+			sudo -u tracker /usr/sbin/sys_boot.sh    <- change 'tracker' to whatever username you set these instructions to
+
+
+-> Manually Stopping
+	./stopbot.sh
+		-> Will kill any running processes associated with the bot
+			-> may see harmless process kill errors if processes were not running at the time
+		-> Main application will not restart automatically
+		-> Must be ran any time you wish to stop the application, even after CTRL+C out of log from [./runbot.sh] file
+
+
+-> Additional script
+	./taillog.sh
+		-> Will chdir to application directory and will tail the [nohup.out] log file if created
+		-> May get error if application was started at boot automatically. Simply run [./stopbot.sh] then [./runbot.sh] to run program with log file
+
+#####################################    CREDITS    ########################################################
+This is an UNATTACHED fork from the shbisson/OverPutney (https://github.com/shbisson/OverPutney) repository 
+modified with the amazing help of Scott Ladewig (https://github.com/ladewig)
+############################################################################################################
+
+
+################   TWITTER API APPLICATION SCRIPT   ################################
+This application is written in python to use the post only API of twitter to post public information 
+obtained from local sensors around the area for aircraft in the sky.  This is a public account in which 
+no information will be read by the API or ads marketed to the viewers. This is for informational and 
+educational purposes only.
+
+################################
+
+Please describe your planned use of these features.
+
+Answer:
+This app will only utilize the tweet/post feature to post publicly available and verifable information 
+used for informational and educational purposes only. This app will not post ads, gather information 
+from users or market information to users.
+
+
+####################################################################################
+

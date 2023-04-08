@@ -1,0 +1,173 @@
+;
+; THIS FILE IS STRICTLY A BACKUP TO THE config.ini FILE. DO NOT MODIFY THIS FILE DIRECTLY
+;
+
+
+[abovetustin]
+driver = dump1090
+
+;  ACCESS TO GLOBAL JSON DATA IS AVAILABLE FOR $3/month - email info@adsb.pro for more information. This allows for bots to be setup without any equipment
+;  at designated coordinates. Example:  https://adsb.pro/@riadsb is a bot used in this method that posts to Mastodon and has absolutly no physical
+;  presense in that location. http://pawtucket.rtmladsb.com is the map used for screen captures (not data).
+;
+;data_url = http://10.242.0.1:8032/data/aircraft.json
+
+data_url = http://localhost/data/aircraft.json
+map_url = https://globe.adsb.fi
+
+map_params_screenshot = &iconscale=1S&hideButtons&hidesidebar&screenshot&noIsolation
+map_params_screenshot_isolate = &iconscale=1S&hideButtons&hidesidebar&screenshot
+request_timeout = 60
+
+
+; An airplane is only tracked and tweeted when it enters the "alarm area" the alarm area
+; is defined by the "distance_alarm" in miles, and the elevation_alarm in degrees from
+; the horizon. If any airplane travels closer than the distance_alarm or higher than the
+; elevation_alarm it will be tracked until it leaves the alarm area.  After
+; "wait_x_updates" updates it will then make the tweet.  It waits "sleep_time" between
+; each update.
+
+distance_alarm = 8
+elevation_alarm = 35
+wait_x_updates = 1
+
+sleep_time = 0.5
+image_width = 1600
+image_height = 1280
+
+isolate_enable = False
+show_site = False
+zoom = 11
+
+sleeptime = 4
+requesttimeout = 20
+
+[receiver]
+;set using latlong.net with a minimum of 2 decimal placed up to 6 depending on privacy
+latitude = 21.00000
+longitude = -97.00000
+
+[crop]
+do_crop = True
+crop_x = 0
+crop_y = 0
+crop_width = 1600
+crop_height = 1160
+
+[images]
+; Modify the paths below to reflect your home directory for your installation of the 
+; AnyFlightTracker Bot. These paths are used to reference the images for the 
+; different platforms notificaitons are posted to
+
+;img_path_1 = Misc. Image
+;img_path_2 = Image obtained from planespotters.net
+;img_path_3 = Image of screenshot
+
+img_path_1 = /home/ubuntu/AnyFlightTracker/
+img_path_2 = /home/ubuntu/AnyFlightTracker/ps_hex.jpg
+img_path_3 = /home/ubuntu/AnyFlightTracker/screen.png
+
+[database]
+; Valid options are True or False
+; Enable hexdb to utilize the API located in the aircraftdata.py file. This API is known to have occasional connection problems
+;   which will cause the BOT to error out and either skip a detected aircraft or crash the applicaiton all together.
+; Enable mysql to utilized our privately maintained aircraft database which will bypass the hexdb API. This requires a subscription
+;   fee of $2 a month to assist in covering the data costs to the queries to the databse.
+hexdb_enable = False
+mysql_enable = True
+
+[tweet]
+; tweet_template is a template for the tweet.  Insert variables into the tweet by adding ${VAR_NAME}.
+; You may use the following variables:
+;    VAR NAME       |                DESCRIPTION
+; ------------------|---------------------------------------------------------
+;    flight         | flight name and number if available, otherwise it will be the icao code
+;    icao           | ICAO code
+;    dist_mi        | Minimum Distance in miles
+;    dist_km        | Minimum Distance in kilometers
+;    dist_nm        | Minimum Distance in nautical miles
+;    alt_ft         | Altitude at the minimum distance in feet.
+;    alt_m          | Altitude at the minimum distance in meters.
+;    el             | Elevation angle at the minimum distance.
+;    az             | Azimuth angle at the minimum distance.
+;    heading        | Heading of aircraft at the minimum distance displayed as N, NW, W, SW, S, SE, E, or NE.
+;    speed_mph      | Speed of the aircraft at the minimum distance in mi/h.
+;    speed_kmph     | Speed of the aircraft at the minimum distance in km/h.
+;    speed_kts      | Speed of the aircraft at the minimum distance in knots.
+;    time           | Time when the aircraft is at the minimum distance.
+;    rssi           | Signal strength in dB at the minimum distance.
+;    vert_rate_ftpm | The vertical speed at the minimum distance in feet/minute.
+;    vert_rate_mpm  | The vertical speed at the minimum distance in meters/minute.
+;    squawk         | The squawk code of the aircraft
+;    orig_name      | FlightAware API - name of origin airport
+;    orig_city      | FlightAware API - name of origin city
+;    orig_alt       | FlightAware API - origin airport IATA code (ICAO code if IATA not specified)
+;    orig_code      | FlightAware API - origin airport ICAO code
+;    dest_name      | FlightAware API - name of destination airport
+;    dest_city      | FlightAware API - name of destination city
+;    dest_alt       | FlightAware API - destination airport IATA code (ICAO code if IATA not specified)
+;    dest_code      | FlightAware API - destination airport ICAO code
+;    plane          | hexdb.io API - aircraft type             ** must set hexdb_enable = True above
+;    regis          | hexdb.io API - aircraft registration     ** must set hexdb_enable = True above
+;    oper           | hexdb.io API - aircraft operator         ** must set hexdb_enable = True above
+;    route          | hexdb.io API - route from callsign       ** must set hexdb_enable = True above
+;    model          | MySQL Query - Aircraft Model             ** must set mysql_enable = True above
+;    typecode       | MySQL Query - Aircraft Typecode          ** must set mysql_enable = True above
+;    owner          | MySQL Query - Aircraft Owner             ** must set mysql_enable = True above
+;    myoper         | MySQL Query - Aircraft Operator          ** must set mysql_enable = True above
+;
+
+
+; $tweet_template will be used when Flightaware API is not enabled or no sufficent data has been received.
+; added regis, plane, and oper for data from api.joshdouch.me
+
+tweet_template =#PHNL - #${flight} (${model} ${typecode}) ${myoper} @ ${alt_ft} ft and ${el}° frm hrzn, heading ${heading} @ ${time} - https://globe.adsb.lol/?icao=${icao}
+;tweet_template =D-#${flight} ${plane} ${oper}: ${dist_mi} mi away @ ${alt_ft} ft and ${el}° frm hrzn, heading ${heading}  - ${time}  https://flightaware.com/live/flight/${flight}
+
+; $fa_tweet_template will replace $tweet_template when enough data is gathered from FA APIcall (see flightaware section below)fa_tweet_template =#${flight} : #${orig_alt} (${orig_city}) to #${dest_alt} (${dest_city}). ${dist_mi} mi away @ ${alt_ft} ft and ${el}° frm hrzn, heading ${heading} @ ${speed_mph}mi/h ${time}.
+
+default_hashtags =#adsb #AnyFlightTracker #rtmladsb 
+
+[flightaware]
+; FlightAware API allows to get more information on the flights. Basic API access is no longer free
+; For more details check: https://flightaware.com/commercial/flightxml/pricing_class.rvt
+fa_enable = False
+fa_username = XXXXXXXX
+fa_api_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+[mysql]
+; Do not modify this section unless directed by our support to do so
+server = 10.242.0.1
+user = AnyFlightTracker
+passwd = TrackerFlightDB1001!!
+database = aircraft
+
+[twitter]
+twitter_enable = False
+consumer_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+consumer_secret = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+access_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+access_token_secret = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+[facebook]
+fb_enable = False
+; ## FB page ID number associated with created app in facebook developer
+page_id_1 = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+; ## FB Extended User Access Key
+facebook_access_token_1 = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+; ## Set the following path to your images when posting to facebook
+
+[mastodon]
+mastodon_enable = False
+server = https://adsb.pro
+token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+server2 = https://mastodon.social
+token2 = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+[discord]
+discord_enable = False
+webhook = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+post_username = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+post_title = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+post_footer = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+post_color = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

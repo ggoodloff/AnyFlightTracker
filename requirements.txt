@@ -1,0 +1,8 @@
+tweepy
+selenium
+Pillow
+psutil
+requests
+mastodon.py
+discord-webhook
+mysqlclient
