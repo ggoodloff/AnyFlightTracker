@@ -10,7 +10,7 @@ echo "You must be logged in as the user you will run this bot as, and that user 
 echo "to successfully use this sctipt to install the AnyFlightTracker bot. This script will pause at "
 echo "each step. SUDO is not to be used to run the bot."
 echo ""
-echo ""Use CTRL-C to break out of the script at any time."
+echo "Use CTRL-C to break out of the script at any time."
 
 read -p "Press ENTER to begin....."
 
@@ -96,7 +96,7 @@ echo ""
 echo "Time to modify some files manually...."
 echo ""
 
-read -p "Press ENTER to modify the screenshot.py file. Change the CACHE parameter to reflect /home/$USER/AnyFlightTracker/chromium"
+read -p "Press ENTER to modify the screenshot.py file. Change the --data-dir parameter to reflect /home/$USER/AnyFlightTracker/chromium"
 /usr/bin/nano screenshot.py
 
 echo ""
