@@ -36,7 +36,9 @@ Configurations are mainly controlled by the config.ini file.
 
 Advanced use: ability to track anywhere using latitude/longitude and access to global map and data/aircraft.json file. 
 
-The installation and operation is very straightforward and works amazingly well. The hardest part was navigating the Facebook developer site to create the correct application and obtain the correct keys that allowed for posting to a Facebook Page of a profile.
+The installation and operation is very straightforward and works amazingly well. The hardest part was navigating the 
+Facebook developer site to create the correct application and obtain the correct keys that allowed for posting to a 
+Facebook Page of a profile.
 
 See my operational setup at:
 
